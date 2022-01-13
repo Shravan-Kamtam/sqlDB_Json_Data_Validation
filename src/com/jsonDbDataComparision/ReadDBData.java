@@ -15,7 +15,7 @@ import java.util.Properties;
 
 public class ReadDBData {
 	
-	public static HashMap<String, List<Object>> readDBData() throws ClassNotFoundException, SQLException {
+	public static HashMap<String, Object> readDBData() throws ClassNotFoundException, SQLException {
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
 		Properties prop = new Properties();
@@ -31,24 +31,27 @@ public class ReadDBData {
 		Statement smt = connect.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 		ResultSet rs = smt.executeQuery(prop.getProperty("sqlQuery"));
 		
-		HashMap<String, List<Object>> listMap = new HashMap<String, List<Object>>();
+		HashMap<String, Object> listMap = new HashMap<String, Object>();
 		
 		for(int i=1;i<=rs.getMetaData().getColumnCount();i++) {
-			ArrayList<Object> list = new ArrayList<Object>();
+//			ArrayList<Object> list = new ArrayList<Object>();
 //			list.add(rs.getMetaData().getColumnTypeName(i));
 			while (rs.next()) {
 				if(rs.getMetaData().getColumnTypeName(i).contains("CHAR") || (rs.getMetaData().getColumnTypeName(i).contains("TEXT"))) {
-					list.add(rs.getString(i));
+//					list.add(rs.getString(i));
+					listMap.put(rs.getMetaData().getColumnName(i), rs.getString(i));
 				}
 				else if(rs.getMetaData().getColumnTypeName(i).contains("INT")) {
-					list.add(rs.getInt(i));
+//					list.add(rs.getInt(i));
+					listMap.put(rs.getMetaData().getColumnName(i), rs.getInt(i));
 				}	
 				else if(rs.getMetaData().getColumnTypeName(i).contains("DECIMAL")) {
-					list.add(rs.getDouble(i));
+//					list.add(rs.getDouble(i));
+					listMap.put(rs.getMetaData().getColumnName(i), rs.getDouble(i));
 				}
 			}				
 			rs.beforeFirst();			
-			listMap.put(rs.getMetaData().getColumnName(i), list);			
+//			listMap.put(rs.getMetaData().getColumnName(i), list);			
 		}
 		System.out.println(listMap);		
 		connect.close();

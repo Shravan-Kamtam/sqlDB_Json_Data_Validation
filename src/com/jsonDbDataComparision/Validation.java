@@ -18,14 +18,14 @@ public class Validation {
 	public static void main(String[] args) {
 		
 		try {
-			Map<String, List<Object>> map = ReadDBData.readDBData();
+			Map<String, Object> map = ReadDBData.readDBData();
 			Map<String, Object> mapJson = JsonFileReader.jsonData();
 			
-
+			
 	    	idDB = Integer.parseInt(map.get("ID").toString());
 	    	nameDB = map.get("Name").toString();
 	    	populationDB = Integer.parseInt(map.get("Population").toString()); 
-	    	countryDB = map.get("countryCode").toString(); 
+	    	countryDB = map.get("CountryCode").toString(); 
 	    	districtDB = map.get("District").toString();
 	    	
 	    	idJson = Integer.parseInt(mapJson.get("id").toString());
