@@ -4,46 +4,46 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
+import org.json.simple.parser.ParseException;
 
 public class Validation {
-	
-	public static int idDB, idJson;
-	public static String nameDB, nameJson;
-	public static int populationDB, populationJson;
-	public static String countryDB, countryJson;
-	public static String districtDB, districtJson;
-	
+	public static void main(String[] args) throws ParseException {
 
-	public static void main(String[] args) {
-		
 		try {
-			Map<String, Object> map = ReadDBData.readDBData();
-			Map<String, Object> mapJson = JsonFileReader.jsonData();
+			Map<String, Object> dbMap = ReadDBData.readDBData();
+			Map<String, List<Object>> mapJson = JsonFileReader.jsonData();
+			String[] a = null;
+
+			for (String name : dbMap.keySet()) {
+				if (name.contains(" Type:VARCHAR") || name.contains(" Type:TEXT")) {
+					a = name.split(" Type:");
+
+					if (!dbMap.get(name).toString().equals(mapJson.get(a[0]).get(0).toString()))
+						System.out.println(("'DB Value'--> " + dbMap.get(name) + " 'Is not matching to json value'--> "
+								+ mapJson.get(a[0]).toString()));
+					else System.out.println(a[0] + " --> DB column Matched with Json Value");
+
+				} 
+				else if (name.contains(" Type:INT")) {
+					a = name.split(" Type:");
+					if (Integer.parseInt(dbMap.get(name).toString()) != Integer
+							.parseInt(mapJson.get(a[0]).get(0).toString()))
+						System.out.println(("'DB Value'--> " + dbMap.get(name) + " 'Is not matching to json value'--> "
+								+ mapJson.get(a[0]).toString()));
+					else System.out.println(a[0] + " --> DB column Matched with Json Value");
+					
+				} 
+				else if (name.contains(" Type:DECIMAL")) {
+					if (Double.parseDouble(dbMap.get(name).toString()) != Double
+							.parseDouble(mapJson.get(a[0]).get(0).toString()))
+						System.out.println(("'DB Value'--> " + dbMap.get(name) + " 'Is not matching to json value'--> "
+								+ mapJson.get(a[0]).toString()));
+					else System.out.println(a[0] + " --> DB column Matched with Json Value");
+				}
+			}
 			
-			
-	    	idDB = Integer.parseInt(map.get("ID").toString());
-	    	nameDB = map.get("Name").toString();
-	    	populationDB = Integer.parseInt(map.get("Population").toString()); 
-	    	countryDB = map.get("CountryCode").toString(); 
-	    	districtDB = map.get("District").toString();
-	    	
-	    	idJson = Integer.parseInt(mapJson.get("id").toString());
-	    	nameJson = mapJson.get("name").toString();
-	    	populationJson = Integer.parseInt(mapJson.get("population").toString());
-	    	countryJson = mapJson.get("countryCode").toString();
-	    	districtJson = mapJson.get("district").toString();
-	    	
-	    	Assert.assertTrue(idDB == idJson &&
-	    			nameDB.equals(nameJson) &&
-	    			populationDB == populationJson &&
-	    			countryDB.equals(countryJson) &&
-	    			districtDB.equals(districtJson));
-		}
-		
-		catch (ClassNotFoundException | SQLException e) {
+		} catch (ClassNotFoundException | SQLException e) {
 			e.printStackTrace();
-		} 
-		
+		}
 	}
 }

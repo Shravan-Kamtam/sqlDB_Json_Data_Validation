@@ -39,21 +39,21 @@ public class ReadDBData {
 			while (rs.next()) {
 				if(rs.getMetaData().getColumnTypeName(i).contains("CHAR") || (rs.getMetaData().getColumnTypeName(i).contains("TEXT"))) {
 //					list.add(rs.getString(i));
-					listMap.put(rs.getMetaData().getColumnName(i), rs.getString(i));
+					listMap.put(rs.getMetaData().getColumnName(i)+" Type:"+rs.getMetaData().getColumnTypeName(i), rs.getString(i));
 				}
 				else if(rs.getMetaData().getColumnTypeName(i).contains("INT")) {
 //					list.add(rs.getInt(i));
-					listMap.put(rs.getMetaData().getColumnName(i), rs.getInt(i));
+					listMap.put(rs.getMetaData().getColumnName(i)+" Type:"+rs.getMetaData().getColumnTypeName(i), rs.getInt(i));
 				}	
 				else if(rs.getMetaData().getColumnTypeName(i).contains("DECIMAL")) {
 //					list.add(rs.getDouble(i));
-					listMap.put(rs.getMetaData().getColumnName(i), rs.getDouble(i));
+					listMap.put(rs.getMetaData().getColumnName(i)+" Type:"+rs.getMetaData().getColumnTypeName(i), rs.getDouble(i));
 				}
 			}				
 			rs.beforeFirst();			
 //			listMap.put(rs.getMetaData().getColumnName(i), list);			
 		}
-		System.out.println(listMap);		
+//		System.out.println(listMap);		
 		connect.close();
 		return listMap;
 	}	 

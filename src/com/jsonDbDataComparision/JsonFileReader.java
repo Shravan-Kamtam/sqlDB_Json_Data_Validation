@@ -1,47 +1,43 @@
 package com.jsonDbDataComparision;
 
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Properties;
+import java.util.List;
+import java.util.Map;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.jayway.jsonpath.JsonPath;
+
+import io.restassured.RestAssured;
+import io.restassured.response.Response;
+
 public class JsonFileReader {
-	
-	static String id = "id",
-				  name = "name",
-				  population ="population",
-				  countryCode ="countryCode",
-				  district ="district",
-				  countrycode = "countryCode";	
-		
-	static Properties prop = new Properties();
-	static HashMap<String, Object> jsonMap = new HashMap<String, Object>();
-	static JSONParser parser = new JSONParser();	
-	public static HashMap<String, Object> jsonData() {
-		try {			
-			FileInputStream fis = new FileInputStream( System.getProperty("user.dir")+"\\src\\com\\jsonDbDataComparision\\config.properties");
-			prop.load(fis);
-			FileReader reader = new FileReader(prop.getProperty("JsonFilePath"));
-			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			
-			jsonMap.put(id, jsonObject.get(id));
-			jsonMap.put(name, jsonObject.get(name));
-			jsonMap.put(population, jsonObject.get(population));
-			jsonMap.put(district,jsonObject.get(district));
-			jsonMap.put(countryCode, jsonObject.get(countryCode));			
-			System.out.println(jsonMap + "**Json Values**");
-			
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
+
+	public static Map<String, List<Object>> jsonData() throws ParseException, ClassNotFoundException, SQLException {
+
+		Map<String, List<Object>> detailedMap = new HashMap<String, List<Object>>();
+
+		RestAssured.baseURI = "https://reqres.in";
+		Response response = RestAssured.given().expect().statusCode(200).when().get("api/users/2").then().extract()
+				.response();
+
+		String jsonRes = response.asString();
+
+		Map<String, Object> dbMap = ReadDBData.readDBData();
+		String[] a = null;
+
+		for (String name : dbMap.keySet()) {
+			a = name.split(" Type:");
+			detailedMap.put(a[0], JsonPath.read(jsonRes, "$.." + a[0] + ""));
 		}
-		return jsonMap;
-	}	
-	/*
-	 * public static void main(String[] args) { jsonData(); }
-	 */
+
+//		System.out.println(detailedMap);
+		return detailedMap;
+	}
+
+	public static void main(String[] args) throws ParseException, ClassNotFoundException, SQLException {
+//		jsonData();
+	}
+
 }
